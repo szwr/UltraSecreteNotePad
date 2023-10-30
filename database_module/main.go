@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 
 	"example.com/api"
 	"example.com/db"
@@ -19,5 +18,5 @@ func main() {
 	server := api.NewServer(*listenAddr, rc)
 
 	fmt.Printf("Starting Server: %v\n", *listenAddr)
-	log.Fatal(server.Start())
+	server.Start()
 }
