@@ -1,49 +1,98 @@
 package api
 
 import (
-	"fmt"
+	"math/rand"
 	"net/http"
 
 	"example.com/db"
+	"github.com/gin-gonic/gin"
 )
+
+type querySearch struct {
+	Link string `json:"link" binding:"required"`
+}
+
+type queryValue struct {
+	Message string `json:"message" binding:"required"`
+}
 
 type Server struct {
 	listenAddr     string
+	serverClient   *gin.Engine
 	databaseClient *db.RedisClient
 }
 
 func NewServer(listenAddr string, databaseClient *db.RedisClient) *Server {
+	router := gin.Default()
+
 	return &Server{
 		listenAddr:     listenAddr,
+		serverClient:   router,
 		databaseClient: databaseClient,
 	}
 }
 
-func (s *Server) Start() error {
-	http.HandleFunc("/read-db", s.handleGetQuery)
-	http.HandleFunc("/add-value", s.handleAddValue)
-	return http.ListenAndServe(s.listenAddr, nil)
+func (s *Server) Start() {
+	s.serverClient.POST("read-db", s.handleGetQuery)
+	s.serverClient.POST("add-value", s.handleAddValue)
+	s.serverClient.Run(s.listenAddr)
 }
 
-func (s *Server) handleGetQuery(w http.ResponseWriter, r *http.Request) {
-	key := r.URL.Query().Get("link")
+func (s *Server) handleGetQuery(c *gin.Context) {
+	var newQuery querySearch
 
-	val, err := s.databaseClient.GetKeyValue(key)
+	err := c.ShouldBindJSON(&newQuery)
 	if err != nil {
-		fmt.Fprintf(w, "Couldn't find key value")
-	} else {
-		fmt.Fprintf(w, "%v", val)
+		c.SecureJSON(http.StatusBadRequest, gin.H{
+			"error": "Bad Request, example: {link: <link>}",
+		})
+		return
 	}
+
+	val, err := s.databaseClient.GetKeyValue(newQuery.Link)
+	if err != nil {
+		c.SecureJSON(http.StatusNotFound, gin.H{
+			"error": "Couldn't find key value",
+		})
+		return
+	}
+
+	c.SecureJSON(http.StatusOK, gin.H{
+		newQuery.Link: val,
+	})
 }
 
-func (s *Server) handleAddValue(w http.ResponseWriter, r *http.Request) {
-	key := r.URL.Query().Get("link")
-	val := r.URL.Query().Get("message")
+func randomString(n int) string {
+	letters := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+	random := make([]rune, n)
 
-	err := s.databaseClient.AddKeyValue(key, val)
-	if err != nil {
-		fmt.Fprintf(w, "Couldn't add new key and value")
-	} else {
-		fmt.Fprintf(w, "key and value added", val)
+	for i := range random {
+		random[i] = letters[rand.Intn(len(letters))]
 	}
+	return string(random)
+}
+
+func (s *Server) handleAddValue(c *gin.Context) {
+	var newValue queryValue
+
+	err := c.ShouldBindJSON(&newValue)
+	if err != nil {
+		c.SecureJSON(http.StatusBadRequest, gin.H{
+			"error": "Bad Request, example: {message: <message>}",
+		})
+		return
+	}
+
+	randomLink := randomString(8)
+	err = s.databaseClient.AddKeyValue(randomLink, newValue.Message)
+	if err != nil {
+		c.SecureJSON(http.StatusBadRequest, gin.H{
+			"error": "Couldn't add message into database",
+		})
+		return
+	}
+
+	c.SecureJSON(http.StatusOK, gin.H{
+		"link": randomLink,
+	})
 }
