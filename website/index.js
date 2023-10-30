@@ -1,39 +1,61 @@
 
 
 $(document).ready(function() {
-   
+
+    console.log(randomTimeOut);
+    // ON PAGE LOAD
+    typeText(text, index);
 });
 
 
 $("#submitButton").click(function() {
+
+    // values from form
     let link = $("#link").val();
     let key = $("#key").val();
     
+    // display values to be sent to backend on the console
     console.log(`SENT VALUE: ${link}`);
     console.log(`SENT KEY: ${key}`);
     
-    // You can process and display the data here
-    let sentData = "Value 1: " + link + "<br>Value 2: " + key;
-    // $("#response").html(sentData);
+    // POST method for now, can be later changed to JSON if needed
+    // URL to be updated
+    $.post( "http://localhost:3000/go-server-endpoint", {
+        link: link,
+        key: key,
+        }, (response) => {
 
-    $.ajax( {
-            url:"http://localhost:3000/go-server-endpoint",
-            type: "POST",
-            data: {
-                value1: link,
-                value2: key,
-            }, success: (response) => {
+                // response is JSON object return from the server
+                console.log(response);
 
-                    console.log(response)
-                    // $("#response").html(response);
-                },
-                error: (jqXHR, textStatus, errorThrown) => {
+                // converting JSON into JavaScript object
+                let data = JSON.parse(response);
 
-                    console.log('ERROR HADNLING');
-                    console.log("jqXHR: " + jqXHR);
-                    console.log("textStatus: " + textStatus);
-                    console.log("errorThrown: " + errorThrown);
+                // display response in console / on website
+                // console.log(data.message);
+                // $("#response").html(response);
+            }).fail( (jqXHR, textStatus, errorThrown) => {
 
-                }
-            })
+            console.log('ERROR HADNLING');
+            console.log("jqXHR: " + jqXHR);
+            console.log("textStatus: " + textStatus);
+            console.log("errorThrown: " + errorThrown);
+        })
 });
+
+let text = "Ultra Secrete Note Pad"
+let index=0;
+randomTimeOut = Math.floor(Math.random() * 300);
+
+const typeText = (text, index) => {
+    
+    if (index < text.length) {
+         $("#title").text($("#title").text() + text.charAt(index));
+         index++;
+
+         setTimeout( () => {
+            typeText(text, index);
+
+         }, 110);
+    }
+}
