@@ -18,7 +18,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 600px;
+    width: 60vw;
 }
 
 .formContent {
@@ -26,7 +26,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 300px;
+    width: 100%;
 }
 
 h1 {
@@ -40,7 +40,7 @@ h1 {
     padding: 10px;
     /* border-radius: 5px; */
     margin: 5px;
-    width: 50%;
+    width: 30vw;
     outline: none;
 }
 
@@ -52,7 +52,7 @@ h1 {
     font-size: 15px;
     /* border-radius: 5px; */
     cursor: pointer;
-    width: 50%;
+    width: 30vw;
     margin-top: 10px;
     font-family: 'Courier New', monospace;
 }
