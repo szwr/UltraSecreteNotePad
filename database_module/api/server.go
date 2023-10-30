@@ -6,14 +6,15 @@ import (
 
 	"example.com/db"
 	"github.com/gin-gonic/gin"
+    "github.com/gin-contrib/cors"
 )
 
 type querySearch struct {
-	Link string `json:"link" binding:"required"`
+	Link string `form:"link" binding:"required"`
 }
 
 type queryValue struct {
-	Message string `json:"message" binding:"required"`
+	Message string `form:"message" binding:"required"`
 }
 
 type Server struct {
@@ -33,15 +34,18 @@ func NewServer(listenAddr string, databaseClient *db.RedisClient) *Server {
 }
 
 func (s *Server) Start() {
+    s.serverClient.Use(cors.Default())
+
 	s.serverClient.POST("read-db", s.handleGetQuery)
 	s.serverClient.POST("add-value", s.handleAddValue)
+
 	s.serverClient.Run(s.listenAddr)
 }
 
 func (s *Server) handleGetQuery(c *gin.Context) {
 	var newQuery querySearch
 
-	err := c.ShouldBindJSON(&newQuery)
+	err := c.ShouldBind(&newQuery)
 	if err != nil {
 		c.SecureJSON(http.StatusBadRequest, gin.H{
 			"error": "Bad Request, example: {link: <link>}",
@@ -75,7 +79,7 @@ func randomString(n int) string {
 func (s *Server) handleAddValue(c *gin.Context) {
 	var newValue queryValue
 
-	err := c.ShouldBindJSON(&newValue)
+	err := c.ShouldBind(&newValue)
 	if err != nil {
 		c.SecureJSON(http.StatusBadRequest, gin.H{
 			"error": "Bad Request, example: {message: <message>}",

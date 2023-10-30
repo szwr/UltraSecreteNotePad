@@ -71,21 +71,18 @@ function sendMessage() {
     
     // POST method for now, can be later changed to JSON if needed
     // URL to be updated
-    $.post( "http://localhost:3000/go-server-endpoint", {
+    $.post( "http://localhost:3000/add-value", {
     
         message: message
         
         }, (response) => {
 
                 // response is JSON object return from the server
-                console.log(response);
-
-                // converting JSON into JavaScript object
-                let data = JSON.parse(response);
+                console.log(response.link);
 
                 // display response in console / on website
                 // console.log(data.message);
-                $("#response").html(`${url} ${urlkey}`);
+                $("#response").html(`${response.link}`);
             }).fail( (jqXHR, textStatus, errorThrown) => {
 
             console.log('ERROR HADNLING');
@@ -93,7 +90,7 @@ function sendMessage() {
             console.log("textStatus: " + textStatus);
             console.log("errorThrown: " + errorThrown);
 
-            $("#response").html(`${url}${urlkey}`);
+            $("#response").html("Error");
         })
 }
 
@@ -110,21 +107,18 @@ function sendLink() {
      
      // POST method for now, can be later changed to JSON if needed
      // URL to be updated
-     $.post( "http://localhost:3000/go-server-endpoint", {
+     $.post( "http://localhost:3000/read-db", {
      
         link: link
          
          }, (response) => {
  
                  // response is JSON object return from the server
-                 console.log(response);
- 
-                 // converting JSON into JavaScript object
-                 let data = JSON.parse(response);
+                 console.log(response.message);
  
                  // display response in console / on website
                  // console.log(data.message);
-                 // $("#response").html(response);
+                 $("#response").html(response.message);
              }).fail( (jqXHR, textStatus, errorThrown) => {
  
              console.log('ERROR HADNLING');
@@ -132,6 +126,6 @@ function sendLink() {
              console.log("textStatus: " + textStatus);
              console.log("errorThrown: " + errorThrown);
 
-             $("#response").html(`${message}`);
+             $("#response").html("Error");
          })
 }
