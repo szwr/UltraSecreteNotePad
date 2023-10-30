@@ -58,7 +58,7 @@ func (s *Server) handleGetQuery(c *gin.Context) {
 	}
 
 	c.SecureJSON(http.StatusOK, gin.H{
-		newQuery.Link: val,
+		"message": val,
 	})
 }
 
