@@ -7,28 +7,28 @@ import (
 )
 
 type RedisClient struct {
-    *redis.Client
+	*redis.Client
 }
 
 func ReturnRedisClient(addr string, password string, db int) *RedisClient {
-    c := redis.NewClient(&redis.Options{
+	c := redis.NewClient(&redis.Options{
 		Addr:     addr,
 		Password: password,
 		DB:       db,
 	})
 
-    return &RedisClient{c}
+	return &RedisClient{c}
 }
 
 func (c *RedisClient) AddKeyValue(key string, val string) error {
-    ctx := context.Background()
+	ctx := context.Background()
 
 	err := c.Set(ctx, key, val, 0).Err()
-    if err != nil {
-        return err
-    }
+	if err != nil {
+		return err
+	}
 
-    return nil
+	return nil
 }
 
 func (c *RedisClient) GetKeyValue(key string) (string, error) {

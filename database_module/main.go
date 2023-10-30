@@ -6,18 +6,18 @@ import (
 	"log"
 
 	"example.com/api"
-    "example.com/db"
+	"example.com/db"
 )
 
 func main() {
 	listenAddr := flag.String("l", ":3000", "Server Address")
-    databaseAddr := flag.String("db", ":6379", "Database Address")
+	databaseAddr := flag.String("db", ":6379", "Database Address")
 	databasePass := flag.String("dbpass", "", "Database Password")
-    flag.Parse()
+	flag.Parse()
 
-    rc := db.ReturnRedisClient(*databaseAddr, *databasePass, 0)
+	rc := db.ReturnRedisClient(*databaseAddr, *databasePass, 0)
 	server := api.NewServer(*listenAddr, rc)
-    
+
 	fmt.Printf("Starting Server: %v\n", *listenAddr)
 	log.Fatal(server.Start())
 }
