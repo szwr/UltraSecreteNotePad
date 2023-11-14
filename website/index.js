@@ -1,12 +1,12 @@
 let role = 1;
-let text = "Ultra Secrete Note Pad";
+let text = "USNP";
 let index = 0;
-let title = $("#title");
-let speed = 250;
+let textLoc = $("#title");
+let speed = 150;
 let randomTimeOut = Math.floor(Math.random() * speed);
 
 $(document).ready(function() {
-    typeText(text, index);
+    typeText(text, index, textLoc);
     changeRole();
 });
 
@@ -18,35 +18,39 @@ const changeRole = () => {
 
     // MESSAGE ROLE
     if (role == 1) {
+        // show/hide the content for each role and change the parameter for submit
         $(".message").hide();
         $(".link").show();
-        console.log("MESSAGE");
         submitButton.click(sendMessage);
 
         role = 0;
+        // show role on footer
+        $(".currentRole").html('MESSAGE ROLE');
     }
     // LINK ROLE
     else {
         $(".message").show();
         $(".link").hide();
-        console.log("LINK");
         submitButton.click(sendLink);
 
         role = 1;
+        $(".currentRole").html('LINK ROLE');
     }
 };
 
 $("#toggleRoleButton").click(changeRole);
 
-const typeText = (text, index) => {
+// writing effect, text to write, index, location of the text
+const typeText = (text, index, textLoc) => {
     if (index < text.length) {
-        title.text(title.text() + text.charAt(index));
+        textLoc.text(textLoc.text() + text.charAt(index));
 
         index++;
+        // time out is different for each character
         randomTimeOut = Math.floor(Math.random() * speed);
 
         setTimeout(() => {
-            typeText(text, index);
+            typeText(text, index, textLoc);
         }, randomTimeOut);
     }
 };
@@ -56,6 +60,9 @@ function sendMessage() {
     // values from form
     let message = $("#message").val();
     let password = $("#encrypt").val();
+    let responseLoc = $("#response");
+    let returnedErrorLoc= $("#error");
+
 
     // POST method for now, can be later changed to JSON if needed
     // URL to be updated
@@ -65,17 +72,19 @@ function sendMessage() {
             password: password,
         },
         (response) => {
-            $("#response").html(`${response.link}`);
-            $("#error").html(response.error);
-        },
-    ).fail((jqXHR, textStatus, errorThrown) => {
-        console.log("ERROR HADNLING");
-        console.log("jqXHR: " + jqXHR);
-        console.log("textStatus: " + textStatus);
-        console.log("errorThrown: " + errorThrown);
+            // $("#response").html(`${response.link}`);
+            // $("#error").html(response.error);
 
-        $("#error").html(response.error);
-    });
+            typeText(response.link, index, responseLoc);
+
+        },).fail((jqXHR, textStatus, errorThrown) => {
+            console.log("ERROR HADNLING");
+            console.log("jqXHR: " + jqXHR);
+            console.log("textStatus: " + textStatus);
+            console.log("errorThrown: " + errorThrown);
+
+            typeText(textStatus, index, returnedErrorLoc);
+        });
 }
 
 // ROLE: MESSAGE -> LINK key-value pair: link-link to server, receive message
@@ -92,8 +101,9 @@ function sendLink() {
             password: password,
         },
         (response) => {
-            $("#response").html(response.message);
-            $("#error").html(response.error);
+            // $("#response").html(response.message);
+            // $("#error").html(response.error);
+            typeText(response.message, index, responseLoc);
         },
     ).fail((jqXHR, textStatus, errorThrown) => {
         console.log("ERROR HADNLING");
@@ -101,6 +111,7 @@ function sendLink() {
         console.log("textStatus: " + textStatus);
         console.log("errorThrown: " + errorThrown);
 
-        $("#error").html(response.error);
+        // $("#error").html(response.error);
+        typeText(textStatus, index, returnedErrorLoc);
     });
 }
