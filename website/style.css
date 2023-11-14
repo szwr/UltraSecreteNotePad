@@ -1,0 +1,66 @@
+body {
+  background-color: black;
+  color: lime;
+  font-family: "Courier New", monospace;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+.content {
+  background-color: #000;
+  border: 1px solid lime;
+  padding: 20px;
+  margin: auto;
+  margin-top: 20px;
+  /* border-radius: 10px; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 60vw;
+}
+
+.formContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+h1 {
+  color: lime;
+}
+
+.input-field {
+  background-color: #333;
+  color: lime;
+  border: 1px solid lime;
+  padding: 10px;
+  /* border-radius: 5px; */
+  margin: 5px;
+  width: 30vw;
+  outline: none;
+}
+
+.submit-button {
+  background-color: lime;
+  color: black;
+  padding: 10px 20px;
+  border: none;
+  font-size: 15px;
+  /* border-radius: 5px; */
+  cursor: pointer;
+  width: 30vw;
+  margin-top: 10px;
+  font-family: "Courier New", monospace;
+}
+
+.submit-button:hover {
+  background-color: #008000; /* Darker green on hover */
+}
+
+.response {
+  margin-top: 20px;
+}
