@@ -92,6 +92,8 @@ function sendLink() {
     // values from form
     let link = $("#link").val();
     let password = $("#decrypt").val();
+    let responseLoc = $("#response");
+    let returnedErrorLoc= $("#error");
 
     // POST method for now, can be later changed to JSON if needed
     // URL to be updated
