@@ -1,31 +1,45 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
+
 <head>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="style.css" />
 </head>
+
 <body>
     <div class="content">
-        <h1 id=title></h1>
+        <h1 id="title"></h1>
         <form id="myForm">
             <div class="formContent">
                 <span class="message">
                     <label for="link">LINK:</label>
-                    <input type="text" id="link" name="link" class="input-field">
+                    <input type="text" id="link" name="link" class="input-field" />
+                    <br />
+                    <label for="message">PASSWORD:</label>
+                    <input type="text" id="decrypt" name="decrypt" class="input-field" />
                 </span>
                 <span class="link">
                     <label for="message">MESSAGE:</label>
-                    <input type="text" id="message" name="message" class="input-field">
+                    <input type="text" id="message" name="message" class="input-field" />
+                    <br />
+                    <label for="message">PASSWORD:</label>
+                    <input type="text" id="encrypt" name="encrypt" class="input-field" />
                 </span>
-               
-                <button type="button" id="submitButton" class="submit-button">Submit</button>
-                <button type="button" id="toggleRoleButton" class="submit-button">Change Role</button>
+
+                <button type="button" id="submitButton" class="submit-button">
+                    Submit
+                </button>
+                <button type="button" id="toggleRoleButton" class="submit-button">
+                    Change Role
+                </button>
             </div>
         </form>
     </div>
 
     <div id="response" class="response"></div>
+    <div id="error" class="error"></div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="index.js"></script>
 </body>
+
 </html>

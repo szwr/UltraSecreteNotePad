@@ -4,18 +4,21 @@ import (
 	"math/rand"
 	"net/http"
 
+	"example.com/cipher"
 	"example.com/db"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-    "github.com/gin-contrib/cors"
 )
 
 type querySearch struct {
-	Link string `form:"link" binding:"required"`
+	Link     string `form:"link" binding:"required"`
+	Password string `form:"password" binding:"required"`
 }
 
 type queryValue struct {
-	Message string `form:"message" binding:"required"`
+	Message  string `form:"message" binding:"required"`
+	Password string `form:"password" binding:"required"`
 }
 
 type Server struct {
@@ -35,7 +38,7 @@ func NewServer(listenAddr string, databaseClient *db.RedisClient) *Server {
 }
 
 func (s *Server) Start() {
-    s.serverClient.Use(cors.Default())
+	s.serverClient.Use(cors.Default())
 
 	s.serverClient.POST("read-db", s.handleGetQuery)
 	s.serverClient.POST("add-value", s.handleAddValue)
@@ -49,32 +52,48 @@ func (s *Server) handleGetQuery(c *gin.Context) {
 	err := c.ShouldBind(&newQuery)
 	if err != nil {
 		c.SecureJSON(http.StatusBadRequest, gin.H{
-			"error": "Bad Request, example: {link: <link>}",
+			"error": "Bad Request, example: {link: <link>, password: <password>}",
 		})
 		return
 	}
 
-	val, err := s.databaseClient.GetKeyValue(newQuery.Link)
+	if len(newQuery.Password) > 32 {
+		c.SecureJSON(http.StatusBadRequest, gin.H{
+			"error": "Too long passowrd.",
+		})
+		return
+	}
+
+	hexEncrypted, err := s.databaseClient.GetKeyValue(newQuery.Link)
 	if err != nil {
 		c.SecureJSON(http.StatusNotFound, gin.H{
-			"error": "Couldn't find key value",
+			"error": "Couldn't find link.",
+		})
+		return
+	}
+
+	plaintext, err := cipher.DecryptString(hexEncrypted, newQuery.Password)
+	if err != nil {
+		c.SecureJSON(http.StatusBadRequest, gin.H{
+			"error": "Decryption failed.",
 		})
 		return
 	}
 
 	c.SecureJSON(http.StatusOK, gin.H{
-		"message": val,
+		"message": plaintext,
 	})
 }
 
-func randomString(n int) string {
-	letters := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
-	random := make([]rune, n)
+func randomLink(size int) string {
+	letters := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+	s := make([]rune, size)
 
-	for i := range random {
-		random[i] = letters[rand.Intn(len(letters))]
+	for i := range s {
+		s[i] = letters[rand.Intn(len(letters))]
 	}
-	return string(random)
+
+	return string(s)
 }
 
 func (s *Server) handleAddValue(c *gin.Context) {
@@ -83,13 +102,28 @@ func (s *Server) handleAddValue(c *gin.Context) {
 	err := c.ShouldBind(&newValue)
 	if err != nil {
 		c.SecureJSON(http.StatusBadRequest, gin.H{
-			"error": "Bad Request, example: {message: <message>}",
+			"error": "Bad Request, example: {message: <message>, password: <password}",
 		})
 		return
 	}
 
-	randomLink := randomString(8)
-	err = s.databaseClient.AddKeyValue(randomLink, newValue.Message)
+	if len(newValue.Password) > 32 {
+		c.SecureJSON(http.StatusBadRequest, gin.H{
+			"error": "Too long passowrd.",
+		})
+		return
+	}
+
+	hexEncrypted, err := cipher.EncryptString(newValue.Message, newValue.Password)
+	if err != nil {
+		c.SecureJSON(http.StatusBadRequest, gin.H{
+			"error": err,
+		})
+		return
+	}
+
+	link := randomLink(8)
+	err = s.databaseClient.AddKeyValue(link, hexEncrypted)
 	if err != nil {
 		c.SecureJSON(http.StatusBadRequest, gin.H{
 			"error": "Couldn't add message into database",
@@ -98,6 +132,6 @@ func (s *Server) handleAddValue(c *gin.Context) {
 	}
 
 	c.SecureJSON(http.StatusOK, gin.H{
-		"link": randomLink,
+		"link": link,
 	})
 }
