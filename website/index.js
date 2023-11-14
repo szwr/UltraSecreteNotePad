@@ -1,3 +1,4 @@
+// VARIABLES
 let role = 1;
 let text = "USNP";
 let index = 0;
@@ -38,9 +39,11 @@ const changeRole = () => {
     }
 };
 
+// assign the changeRole function to the button
 $("#toggleRoleButton").click(changeRole);
 
-// writing effect, text to write, index, location of the text
+// writing effect
+// parameters: (text to write, index, location of the text)
 const typeText = (text, index, textLoc) => {
     if (index < text.length) {
         textLoc.text(textLoc.text() + text.charAt(index));
@@ -55,14 +58,13 @@ const typeText = (text, index, textLoc) => {
     }
 };
 
-// ROLE: MESSAGE -> SEND key-value pair: message-message to server, receive link
+// ROLE: MESSAGE -> send key-value pair: message-message to server, receive link
 function sendMessage() {
     // values from form
     let message = $("#message").val();
     let password = $("#encrypt").val();
     let responseLoc = $("#response");
     let returnedErrorLoc= $("#error");
-
 
     // POST method for now, can be later changed to JSON if needed
     // URL to be updated
@@ -87,7 +89,7 @@ function sendMessage() {
         });
 }
 
-// ROLE: MESSAGE -> LINK key-value pair: link-link to server, receive message
+// ROLE: LINK -> send key-value pair: link-link to server, receive message
 function sendLink() {
     // values from form
     let link = $("#link").val();
