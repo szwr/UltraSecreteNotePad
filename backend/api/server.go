@@ -52,14 +52,14 @@ func (s *Server) handleGetQuery(c *gin.Context) {
 	err := c.ShouldBind(&newQuery)
 	if err != nil {
 		c.SecureJSON(http.StatusBadRequest, gin.H{
-			"error": "Bad Request, example: {link: <link>, password: <password>}",
+			"message": "Bad Request, example: {link: <link>, password: <password>}",
 		})
 		return
 	}
 
 	if len(newQuery.Password) > 32 {
 		c.SecureJSON(http.StatusBadRequest, gin.H{
-			"error": "Too long passowrd.",
+			"message": "Too long passowrd.",
 		})
 		return
 	}
@@ -67,7 +67,7 @@ func (s *Server) handleGetQuery(c *gin.Context) {
 	hexEncrypted, err := s.databaseClient.GetKeyValue(newQuery.Link)
 	if err != nil {
 		c.SecureJSON(http.StatusNotFound, gin.H{
-			"error": "Couldn't find link.",
+			"message": "Couldn't find link.",
 		})
 		return
 	}
@@ -75,7 +75,7 @@ func (s *Server) handleGetQuery(c *gin.Context) {
 	plaintext, err := cipher.DecryptString(hexEncrypted, newQuery.Password)
 	if err != nil {
 		c.SecureJSON(http.StatusBadRequest, gin.H{
-			"error": "Decryption failed.",
+			"message": "Decryption failed.",
 		})
 		return
 	}
@@ -102,14 +102,14 @@ func (s *Server) handleAddValue(c *gin.Context) {
 	err := c.ShouldBind(&newValue)
 	if err != nil {
 		c.SecureJSON(http.StatusBadRequest, gin.H{
-			"error": "Bad Request, example: {message: <message>, password: <password}",
+			"link": "Bad Request, example: {message: <message>, password: <password}",
 		})
 		return
 	}
 
 	if len(newValue.Password) > 32 {
 		c.SecureJSON(http.StatusBadRequest, gin.H{
-			"error": "Too long passowrd.",
+			"link": "Too long passowrd.",
 		})
 		return
 	}
@@ -117,7 +117,7 @@ func (s *Server) handleAddValue(c *gin.Context) {
 	hexEncrypted, err := cipher.EncryptString(newValue.Message, newValue.Password)
 	if err != nil {
 		c.SecureJSON(http.StatusBadRequest, gin.H{
-			"error": err,
+			"link": "Encryption failed.",
 		})
 		return
 	}
@@ -126,7 +126,7 @@ func (s *Server) handleAddValue(c *gin.Context) {
 	err = s.databaseClient.AddKeyValue(link, hexEncrypted)
 	if err != nil {
 		c.SecureJSON(http.StatusBadRequest, gin.H{
-			"error": "Couldn't add message into database",
+			"link": "Couldn't add message into database",
 		})
 		return
 	}

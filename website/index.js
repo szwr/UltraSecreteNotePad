@@ -85,7 +85,7 @@ function sendMessage() {
             console.log("textStatus: " + textStatus);
             console.log("errorThrown: " + errorThrown);
 
-            typeText(textStatus, index, returnedErrorLoc);
+            typeText(jqXHR.responseText, index, returnedErrorLoc);
         });
 }
 
@@ -116,6 +116,6 @@ function sendLink() {
         console.log("errorThrown: " + errorThrown);
 
         // $("#error").html(response.error);
-        typeText(textStatus, index, returnedErrorLoc);
+        typeText(jqXHR.responseText, index, returnedErrorLoc);
     });
 }
