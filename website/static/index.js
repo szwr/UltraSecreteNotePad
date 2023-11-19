@@ -69,15 +69,15 @@ function sendMessage() {
     // POST method for now, can be later changed to JSON if needed
     // URL to be updated
     $.post(
-        "http://localhost:3000/add-value", {
+        "http://127.0.0.1:8080/api/add-value", {
             message: message,
             password: password,
         },
         (response) => {
-            // $("#response").html(`${response.link}`);
+            $("#response").html(`${response.link}`);
             // $("#error").html(response.error);
 
-            typeText(response.link, index, responseLoc);
+            // typeText(response.link, index, responseLoc);
 
         },).fail((jqXHR, textStatus, errorThrown) => {
             console.log("ERROR HADNLING");
@@ -85,7 +85,8 @@ function sendMessage() {
             console.log("textStatus: " + textStatus);
             console.log("errorThrown: " + errorThrown);
 
-            typeText(jqXHR.responseText, index, returnedErrorLoc);
+            $("#response").html(`${jqXHR.responseText}`);
+            // typeText(jqXHR.responseText, index, returnedErrorLoc);
         });
 }
 
@@ -100,14 +101,14 @@ function sendLink() {
     // POST method for now, can be later changed to JSON if needed
     // URL to be updated
     $.post(
-        "http://localhost:3000/read-db", {
+        "http://127.0.0.1:8080/api/read-db", {
             link: link,
             password: password,
         },
         (response) => {
-            // $("#response").html(response.message);
+            $("#response").html(response.message);
             // $("#error").html(response.error);
-            typeText(response.message, index, responseLoc);
+            // typeText(response.message, index, responseLoc);
         },
     ).fail((jqXHR, textStatus, errorThrown) => {
         console.log("ERROR HADNLING");
@@ -115,7 +116,7 @@ function sendLink() {
         console.log("textStatus: " + textStatus);
         console.log("errorThrown: " + errorThrown);
 
-        // $("#error").html(response.error);
-        typeText(jqXHR.responseText, index, returnedErrorLoc);
+        $("#response").html(`${jqXHR.responseText}`);
+        // typeText(jqXHR.responseText, index, returnedErrorLoc);
     });
 }
