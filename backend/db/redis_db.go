@@ -10,14 +10,17 @@ type RedisClient struct {
 	*redis.Client
 }
 
-func ReturnRedisClient(addr string, password string, db int) *RedisClient {
+func ReturnRedisClient(addr string, password string, db int) (*RedisClient, error) {
 	c := redis.NewClient(&redis.Options{
 		Addr:     addr,
 		Password: password,
 		DB:       db,
 	})
 
-	return &RedisClient{c}
+	ctx := context.Background()
+	err := c.Ping(ctx).Err()
+
+	return &RedisClient{c}, err
 }
 
 func (c *RedisClient) AddKeyValue(key string, val string) error {

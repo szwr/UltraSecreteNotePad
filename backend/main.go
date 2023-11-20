@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 
 	"example.com/api"
 	"example.com/db"
@@ -14,7 +15,11 @@ func main() {
 	databasePass := flag.String("dbpass", "", "Database Password")
 	flag.Parse()
 
-	rc := db.ReturnRedisClient(*databaseAddr, *databasePass, 0)
+	rc, err := db.ReturnRedisClient(*databaseAddr, *databasePass, 0)
+	if err != nil {
+		log.Fatalf("Error with Redis connection: %v", err)
+	}
+
 	server := api.NewServer(*listenAddr, rc)
 
 	fmt.Printf("Starting Server: %v\n", *listenAddr)

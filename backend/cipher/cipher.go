@@ -13,12 +13,12 @@ func EncryptString(str string, pass string) (string, error) {
 
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		return "", fmt.Errorf("Aes: %v", err)
+		return "", fmt.Errorf("Aes NewCipher Error: %v", err)
 	}
 
 	aesgcm, err := cipher.NewGCM(block)
 	if err != nil {
-		return "", fmt.Errorf("Cipher: %v", err)
+		return "", fmt.Errorf("Cipher NewGCM Error: %v", err)
 	}
 
 	nonce := make([]byte, aesgcm.NonceSize())
@@ -33,23 +33,23 @@ func DecryptString(hexEncrypted string, pass string) (string, error) {
 
 	c, err := hex.DecodeString(hexEncrypted)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("Decrypt Hex Decode Error: %v", err)
 	}
 
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("Aes NewCipher Error: %v", err)
 	}
 
 	aesgcm, err := cipher.NewGCM(block)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("Cipher NewGCM Error: %v", err)
 	}
 
 	nonce := make([]byte, aesgcm.NonceSize())
 	plaintext, err := aesgcm.Open(c[:0], nonce, c, nil)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("Decrypt Open Error: %v", err)
 	}
 
 	return string(plaintext), nil

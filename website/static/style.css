@@ -52,6 +52,7 @@ h1 {
   font-size: 15px;
   /* border-radius: 5px; */
   cursor: pointer;
+  max-width: 150px;
   width: 30vw;
   margin-top: 10px;
   font-family: "Courier New", monospace;
@@ -63,4 +64,10 @@ h1 {
 
 .response {
   margin-top: 20px;
+}
+
+footer {
+  float: right;
+  margin-right: 30px;
+  font-size: 9px;
 }
